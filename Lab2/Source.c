@@ -6,6 +6,8 @@ D. pronalazi element u listi (po prezimenu),
 E. brise odredeni element iz liste,
 U zadatku se ne smiju koristiti globalne varijable. */
 
+//Pisi na eng i puna imena funkcija!!
+
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
@@ -49,7 +51,7 @@ int main() {
 			break;
 		case 3:
 			UnosK(&head);
-			break;
+			break;												//Bilo bi bolje u funkciju ovo stavit!
 		case 4:
 			Trazi(&head);
 			break;
@@ -79,7 +81,7 @@ Pozicija stvoriOsobu() {
 	novaOsoba = (Pozicija)malloc(sizeof(Osoba));
 	
 	if (!novaOsoba) {							//PROVJERA MALLOCA!!
-		printf("Greška u alociranju!\n");
+		printf("Greska u alociranju!\n");
 		return NULL;
 	}
 
@@ -100,11 +102,16 @@ Pozicija stvoriOsobu() {
 }
 
 int UnosP(Pozicija P) {
-	Pozicija novaOs = NULL;
-	novaOs = stvoriOsobu();
+	Pozicija novaOsoba = NULL;
+	novaOsoba = stvoriOsobu();
 
-	novaOs->next = P->next;
-	P->next = novaOs;
+	if (!novaOsoba) {							//PROVJERA MALLOCA!!
+		printf("Greska u alociranju!\n");
+		return NULL;
+	}
+
+	novaOsoba->next = P->next;
+	P->next = novaOsoba;
 
 	return EXIT_SUCCESS;
 }
@@ -119,14 +126,19 @@ int Ispis(Pozicija P) {
 }
 
 int UnosK(Pozicija P) {
-	Pozicija novaOs = NULL;
-	novaOs = stvoriOsobu();
+	Pozicija novaOsoba = NULL;
+	novaOsoba = stvoriOsobu();
+
+	if (!novaOsoba) {							//PROVJERA MALLOCA!!
+		printf("Greska u alociranju!\n");
+		return NULL;
+	}
 
 	while (P->next != NULL)
 		P = P->next;
 
-	novaOs->next = P->next;
-	P->next = novaOs;
+	novaOsoba->next = P->next;
+	P->next = novaOsoba;
 	
 	return EXIT_SUCCESS;
 }
