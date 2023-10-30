@@ -32,7 +32,10 @@ Pozicija TraziPrev(Pozicija);
 int Brisi(Pozicija);
 int UnosIza(Pozicija);
 int UnosIspred(Pozicija);
-int SortiraniUnos(Pozicija);
+int SortirajListu(Pozicija);
+int UnosDatoteka(char*, Pozicija);
+int IspisDatoteka(char*);
+int BrisiSve(Pozicija);
 
 int main() {
 	Osoba head = { .ime = {0},.prezime = {0}, .godinaRodenja = 0, .next = NULL };
@@ -40,12 +43,16 @@ int main() {
 	int odabir = 0;
 
 	do {
+		printf("\n");
 		printf("Unosom broja odabires radnju koju zelis napraviti:\n 1) dinamicki dodaje novi element na pocetak liste\n 2) ispisuje listu\n 3) dinamicki dodaje novi element na kraj liste\n 4) pronalazi element u listi(po prezimenu)\n 5) brise odredeni element iz liste\n");
 		printf(" 6) dinamicki dodaje novi element iza odredenog elementa\n 7) dinamicki dodaje novi element ispred odredenog elementa\n 8) sortira listu po prezimenima osoba\n 9) upisuje listu u datoteku\n 10) cita listu iz datoteke\n  Unosom 0 izlazite iz menija\n");
 
 		scanf("%d", &odabir);
 
 		switch (odabir) {
+		case 0:
+			printf("Uspjesno ste izasli iz menija!\n");
+			break;
 		case 1:
 			UnosP(&head);
 			break;
@@ -68,13 +75,13 @@ int main() {
 			UnosIspred(&head);
 			break;
 		case 8:
-			SortiraniUnos(&head);
+			SortirajListu(&head);
 			break;
 		/*case 9:
-			Brisi(&head);
+			UnosDatoteka();
 			break;
 		case 10:
-			Brisi(&head);
+			IspisDatoteka();
 			break;*/
 		default:
 			printf("Unijeli ste neispravan broj:\n"); //Kad unesem nulu ne zelim da se ovo ispise??!
@@ -83,6 +90,8 @@ int main() {
 
 	while (odabir != 0);
 
+	BrisiSve(&head); //Na kraju brisemo cijelu listu da ne zauzima mwmoeiju!
+	
 	return EXIT_SUCCESS;
 }
 
@@ -249,7 +258,48 @@ int UnosIspred(Pozicija P) {
 	return EXIT_SUCCESS;
 }
 
-int SortiraniUnos(Pozicija P) {
+int SortirajListu(Pozicija P) {
+	Pozicija temp, end, x, prev_x;
 
+	end = NULL;
+
+	while (P->next != end) {
+		prev_x = P;
+		x = P->next;
+		while (x->next != end) {
+			if (strcmp(x->prezime, x->next->prezime) > 0) {
+				temp = x->next;
+				prev_x->next = temp;
+				x->next = temp->next;
+				temp->next = x;
+
+				x = temp;
+			}
+			prev_x = x;
+			x = x->next;
+		}
+		end = x;
+	}
+	return EXIT_SUCCESS;
 }
 
+int UnosDatoteka(char* imeDat, Pozicija P) {
+
+	return EXIT_SUCCESS;
+}
+
+int IspisDatoteka(char* imeDat) {
+
+	return EXIT_SUCCESS;
+}
+
+int BrisiSve(Pozicija P) {
+	Pozicija temp;
+
+	while (P->next != NULL) {
+		temp = P->next;
+		P->next = temp->next;
+		free(temp);
+	}
+	return EXIT_SUCCESS;
+}
