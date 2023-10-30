@@ -36,6 +36,7 @@ int main() {
 	int odabir = 0;	
 
 	do {
+		printf("\n");
 		printf("Unosom broja odabires radnju koju zelis napraviti:\n 1) dinamicki dodaje novi element na pocetak liste\n 2) ispisuje listu\n 3) dinamicki dodaje novi element na kraj liste\n 4) pronalazi element u listi(po prezimenu)\n 5) brise odredeni element iz liste\n Unosom 0 izlazite iz menija\n");
 		scanf("%d", &odabir);
 
@@ -55,8 +56,11 @@ int main() {
 		case 5:
 			Brisi(&head);
 			break;
+		case 0:
+			printf("Uspjesno ste izasli iz menija!\n");
+			break;
 		default:
-			printf("Unijeli ste neispravan broj:\n"); //Kad unesem nulu ne zelim da se ovo ispise??!
+			printf("Unijeli ste neispravan broj!\n"); 
 		}
 	}
 
@@ -79,13 +83,13 @@ Pozicija stvoriOsobu() {
 		return NULL;
 	}
 
-	printf("Unesi ime: \n");
+	printf("Unesi ime:\n");
 	scanf("%s", imeOs);
 
-	printf("Unesi prezime: \n");
+	printf("Unesi prezime:\n");
 	scanf("%s", prezimeOs);
 
-	printf("Unesi godinu rodenja: \n");
+	printf("Unesi godinu rodenja:\n");
 	scanf("%d", &godinaRodenjaOs);
 
 	strcpy(novaOsoba->ime, imeOs); //char* strcpy(char* destination, const char* source);
@@ -130,7 +134,7 @@ int UnosK(Pozicija P) {
 Pozicija Trazi(Pozicija P) {
 
 	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe koju zelis pronaci: \n");
+	printf("Unesi prezime osobe koju zelis pronaci:\n");
 	scanf("%s", prez);
 
 
@@ -150,7 +154,7 @@ Pozicija TraziPrev(Pozicija P) {
 	P = P->next;
 
 	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe koju zelis izbrisati: \n");
+	printf("Unesi prezime osobe koju zelis izbrisati:\n");
 	scanf("%s", prez);
 	
 	while(P != NULL && strcmp(P->prezime, prez)) { //string compare!!
