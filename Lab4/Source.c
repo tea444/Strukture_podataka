@@ -34,23 +34,23 @@ int insertSorted(Position, Position);
 int printPolynome(Position);
 
 int main() {
-	Polynome head = { .constant = 0, .exponent = 0, .next = NULL };
-    
+	Polynome Head1 = { .constant = 0, .exponent = 0, .next = NULL }; //treba readFromFile() i ostale funkcijes
+    Polynome Head2 = { .constant = 0, .exponent = 0, .next = NULL };
 
-
+ 
 
 	return EXIT_SUCCESS;
 
 }
 
 Position createPolynome() {
-    Position head = NULL;
+    Position newPoly = NULL;
     int _constant = 0;
     int _exponent = 0;
 
-    head = (Position)malloc(sizeof(Polynome));
+    newPoly = (Position)malloc(sizeof(Polynome));
 
-    if (!head) {
+    if (!newPoly) {
         printf("Error allocation!\n");
         return EXIT_FAILURE;
     }
@@ -61,11 +61,11 @@ Position createPolynome() {
     printf("Enter an exponent:\n");
     scanf("%d", _exponent);
 
-    head->constant = _constant;
-    head->exponent = _exponent;
-    head->next = NULL;
+    newPoly->constant = _constant;
+    newPoly->exponent = _exponent;
+    newPoly->next = NULL;
 
-    return head;
+    return newPoly;
 }
 
 int insertSorted(Position head1, Position head2) {
@@ -78,7 +78,7 @@ int insertSorted(Position head1, Position head2) {
     }
 
     if (head2->constant == 0)
-        return EXIT_SUCCESS;;
+        return EXIT_SUCCESS;
 
     while (head1 != NULL) {
         if (head1->next == NULL || (head2->exponent) > (head1->next->exponent)) {
