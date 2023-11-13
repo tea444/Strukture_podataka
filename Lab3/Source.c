@@ -13,293 +13,324 @@ E. cita listu iz datoteke
 #include <string.h>
 
 #define MAX_SIZE (50)
+#define EXIT_FAILURE (-1)
 
-typedef struct _osoba* Pozicija;
+typedef struct _person* Position;
 
-typedef struct _osoba {
-	char ime[MAX_SIZE];
-	char prezime[MAX_SIZE];
-	int godinaRodenja;
-	Pozicija next;
-}Osoba;
+typedef struct _person {
+	char name[MAX_SIZE];
+	char surname[MAX_SIZE];
+	int dateOfBirth;
+	Position next;
+}Person;
 
-Pozicija stvoriOsobu();
-int UnosP(Pozicija);
-int Ispis(Pozicija);
-int UnosK(Pozicija);
-Pozicija Trazi(Pozicija);
-Pozicija TraziPrev(Pozicija);
-int Brisi(Pozicija);
-int UnosIza(Pozicija);
-int UnosIspred(Pozicija);
-int SortirajListu(Pozicija);
-int UnosDatoteka(char*, Pozicija);
-int IspisDatoteka(char*);
-int BrisiSve(Pozicija);
+Position createPerson();
+int addToFront(Position);
+int printList(Position);
+int addToEnd(Position);
+Position searchBySurname(Position);
+Position searchPrevious(Pozicija);
+int deletePerson(Position);
+int insertAfterPerson(Position);
+int insertBeforePerson(Position);
+int sortList(Position);
+int writeToFile(char*, Position);
+int readFromFile(char*);
+int deleteList(Position);
+int menu(Person);
 
 int main() {
-	Osoba head = { .ime = {0},.prezime = {0}, .godinaRodenja = 0, .next = NULL };
+	Person Head = { .name = {0},.surname = {0}, .dateOfBirth = 0, .next = NULL };
 
-	int odabir = 0;
-
-	do {
-		printf("\n");
-		printf("Unosom broja odabires radnju koju zelis napraviti:\n 1) dinamicki dodaje novi element na pocetak liste\n 2) ispisuje listu\n 3) dinamicki dodaje novi element na kraj liste\n 4) pronalazi element u listi(po prezimenu)\n 5) brise odredeni element iz liste\n");
-		printf(" 6) dinamicki dodaje novi element iza odredenog elementa\n 7) dinamicki dodaje novi element ispred odredenog elementa\n 8) sortira listu po prezimenima osoba\n 9) upisuje listu u datoteku\n 10) cita listu iz datoteke\n  Unosom 0 izlazite iz menija\n");
-
-		scanf("%d", &odabir);
-
-		switch (odabir) {
-		case 0:
-			printf("Uspjesno ste izasli iz menija!\n");
-			break;
-		case 1:
-			UnosP(&head);
-			break;
-		case 2:
-			Ispis(head.next);
-			break;
-		case 3:
-			UnosK(&head);
-			break;
-		case 4:
-			Trazi(&head);
-			break;
-		case 5:
-			Brisi(&head);
-			break;
-		case 6:
-			UnosIza(&head);
-			break;
-		case 7:
-			UnosIspred(&head);
-			break;
-		case 8:
-			SortirajListu(&head);
-			break;
-		/*case 9:
-			UnosDatoteka();
-			break;
-		case 10:
-			IspisDatoteka();
-			break;*/
-		default:
-			printf("Unijeli ste neispravan broj:\n"); //Kad unesem nulu ne zelim da se ovo ispise??!
-		}
-	}
-
-	while (odabir != 0);
-
-	BrisiSve(&head); //Na kraju brisemo cijelu listu da ne zauzima mwmoeiju!
+	menu(Head);
 	
 	return EXIT_SUCCESS;
 }
 
-Pozicija stvoriOsobu() {
-	Pozicija novaOsoba = NULL;
-	char imeOs[MAX_SIZE] = { 0 };
-	char prezimeOs[MAX_SIZE] = { 0 };
-	int godinaRodenjaOs = 0;
+Position createPerson() {
+	Position newPerson = NULL;
+	char namePerson[MAX_SIZE] = { 0 };
+	char surnamePerson[MAX_SIZE] = { 0 };
+	int dateBirthPerson = 0;
 
-	novaOsoba = (Pozicija)malloc(sizeof(Osoba));
+	newPerson = (Position)malloc(sizeof(Person));
 
-	if (!novaOsoba) {							//PROVJERA MALLOCA!!
-		printf("Gre�ka u alociranju!\n");
-		return NULL;
+	if (!newPerson) {							//PROVJERA MALLOCA!!
+		printf("Error allocation!\n");
+		return EXIT_FAILURE;
 	}
 
-	printf("Unesi ime: \n");
-	scanf("%s", imeOs);
+	printf("Enter name: \n");
+	scanf("%s", namePerson);
 
-	printf("Unesi prezime: \n");
-	scanf("%s", prezimeOs);
+	printf("Enter surname: \n");
+	scanf("%s", surnamePerson);
 
-	printf("Unesi godinu rodenja: \n");
-	scanf("%d", &godinaRodenjaOs);
+	printf("Enter date of birth: \n");
+	scanf("%d", &dateBirthPerson);
 
-	strcpy(novaOsoba->ime, imeOs); //char* strcpy(char* destination, const char* source);
-	strcpy(novaOsoba->prezime, prezimeOs);
-	novaOsoba->godinaRodenja = godinaRodenjaOs;
+	strcpy(newPerson->name, namePerson); //char* strcpy(char* destination, const char* source);
+	strcpy(newPerson->surname, surnamePerson);
+	newPerson->dateOfBirth = dateBirthPerson;
 
-	return novaOsoba;
+	return newPerson;
 }
 
-int UnosP(Pozicija P) {
-	Pozicija novaOs = NULL;
-	novaOs = stvoriOsobu();
+int addToFront(Position head) {
+	Position newPerson = NULL;
+	newPerson = createPerson();
 
-	novaOs->next = P->next;
-	P->next = novaOs;
+	newPerson->next = head->next;
+	head->next = newPerson;
 
 	return EXIT_SUCCESS;
 }
 
-int Ispis(Pozicija P) {
+int printList(Position firstElement) {
 
-	while (P != NULL) {
-		printf("%s \t %s \t %d\n", P->ime, P->prezime, P->godinaRodenja);
-		P = P->next;
+	while (firstElement != NULL) {
+		printf("%s \t %s \t %d\n", firstElement->name, firstElement->surname, firstElement->dateOfBirth);
+		firstElement = firstElement->next;
 	}
 	return EXIT_SUCCESS;
 }
 
-int UnosK(Pozicija P) {
-	Pozicija novaOs = NULL;
-	novaOs = stvoriOsobu();
+int addToEnd(Position head) {
+	Position newPerson = NULL;
+	newPerson = createPerson();
 
-	while (P->next != NULL)
-		P = P->next;
+	while (head->next != NULL)
+		head = head->next;
 
-	novaOs->next = P->next;
-	P->next = novaOs;
+	newPerson->next = head->next;
+	head->next = newPerson;
 
 	return EXIT_SUCCESS;
 }
 
-Pozicija Trazi(Pozicija P) {
+Position searchBySurname(Position head) {
 
-	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe koju zelis pronaci: \n");
-	scanf("%s", prez);
+	char surnamePerson[MAX_SIZE];
+	printf("Enter surname of the person you want to delete: \n");
+	scanf("%s", surnamePerson);
 
 
-	while (P != NULL && strcmp(P->prezime, prez))
-		P = P->next;
+	while (head != NULL && strcmp(head->surname, surnamePerson))
+		head = head->next;
 
-	if (P == NULL)
-		printf("Ne postoji osoba sa trazenim prezimenom!\n");
+	if (head == NULL)
+		printf("The last name you entered does not exist!\n");
 	else
-		printf("%s\t %s\t %d\n", P->ime, P->prezime, P->godinaRodenja);
+		printf("%s\t %s\t %d\n", head->name, head->surname, head->dateOfBirth);
 
-	return P;
+	return head;
 }
 
-Pozicija TraziPrev(Pozicija P) {
-	Pozicija prev = P;
-	P = P->next;
+Position searchPrevious(Position head) {
+	Position previousPerson = head;
+	head = head->next;
 
-	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe koju zelis izbrisati: \n");
-	scanf("%s", prez);
+	char surnamePerson[MAX_SIZE];
+	printf("Enter surname of the person you want to delete:\n");
+	scanf("%s", surnamePerson);
 
-	while (P != NULL && strcmp(P->prezime, prez)) { //string compare!!
-		prev = P;
-		P = P->next;
+	while (head != NULL && strcmp(head->surname, surnamePerson)) { //string compare!!
+		previousPerson = head;
+		head = head->next;
 	}
 
-	if (P == NULL) 
-		return P;
+	if (head == NULL) 
+		return head;
 
 	else
-		return prev;
+		return previousPerson;
 }
 
-int Brisi(Pozicija P) {
-	Pozicija prev = NULL;
-	prev = TraziPrev(P);
+int deletePerson(Position head) {
+	Position previous = NULL;
+	previous = searchPrevious(head);
 
-	if (prev != NULL) {
-		P = prev->next;
-		prev->next = P->next;
-		free(P);
+	if (previous != NULL) {
+		head = previous->next;
+		previous->next = head->next;
+		free(head);
 	}
 	else
-		printf("Ne postoji osoba unesenog prezimena!\n");
+		printf("The last name you entered does not exist!\n");
 
 	return EXIT_SUCCESS;
 }
 
-int UnosIza(Pozicija P) {
+int insertAfterPerson(Position head) {
 	
-	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe iza koje zelis postaviti novu osobu: \n");
-	scanf("%s", prez);
+	char surnamePerson[MAX_SIZE];
+	printf("Enter the last name of the person after whom you want to put a new person: \n");
+	scanf("%s", surnamePerson);
 
-	while (P != NULL && strcmp(P->prezime, prez)) {
-		P=P->next;
+	while (head != NULL && strcmp(head->surname, surnamePerson)) {
+		head=head->next;
 	}
 
-	if (P != NULL) {
-		Pozicija q = NULL;
-		q = stvoriOsobu();
+	if (head != NULL) {
+		Position temp = NULL;
+		temp = createPerson();
 
-		q->next = P->next;
-		P->next = q;
+		temp->next = head->next;
+		head->next = temp;
 	}
 	else
-		printf("Prezime koje ste unijeli ne postoji!\n");
+		printf("The last name you entered does not exist!\n");
 	
 	return EXIT_SUCCESS;
 }
 
-int UnosIspred(Pozicija P) {
-	Pozicija prev = P;
-	P = P->next;
+int insertBeforePerson(Position head) {
+	Position previous = head;
+	head = head->next;
 
-	char prez[MAX_SIZE];
-	printf("Unesi prezime osobe ispred koje zelis postaviti novu osobu: \n");
-	scanf("%s", prez);
+	char surnamePerson[MAX_SIZE];
+	printf("Enter the last name of the person before whom you want to put a new person:\n");
+	scanf("%s", surnamePerson);
 
-	while (P != NULL && strcmp(P->prezime, prez)) {
-		prev = P;
-		P = P->next;
+	while (head != NULL && strcmp(head->surname, surnamePerson)) {
+		previous = head;
+		head = head->next;
 	}
 
-	if (P != NULL) {
-		Pozicija q = NULL;
-		q = stvoriOsobu();
+	if (head != NULL) {
+		Position temp = NULL;
+		temp = createPerson();
 
-		q->next = prev->next;
-		prev->next = q;
+		temp->next = previous->next;
+		previous->next = temp;
 	}
 	else
-		printf("Prezime koje ste unijeli ne postoji!\n");
+		printf("The last name you entered does not exist!\n");
 
 	return EXIT_SUCCESS;
 }
 
-int SortirajListu(Pozicija P) {
-	Pozicija temp, end, x, prev_x;
+int sortList(Position head) {
+	Position temp, end, person, previousPerson;
 
 	end = NULL;
 
-	while (P->next != end) {
-		prev_x = P;
-		x = P->next;
-		while (x->next != end) {
-			if (strcmp(x->prezime, x->next->prezime) > 0) {
-				temp = x->next;
-				prev_x->next = temp;
-				x->next = temp->next;
-				temp->next = x;
+	while (head->next != end) {
+		previousPerson = head;
+		person = head->next;
+		while (person->next != end) {
+			if (strcmp(person->surname, person->next->surname) > 0) {
+				temp = person->next;
+				previousPerson->next = temp;
+				person->next = temp->next;
+				temp->next = person;
 
-				x = temp;
+				person = temp;
 			}
-			prev_x = x;
-			x = x->next;
+			previousPerson = person;
+			person = person->next;
 		}
-		end = x;
+		end = person;
 	}
 	return EXIT_SUCCESS;
 }
 
-int UnosDatoteka(char* imeDat, Pozicija P) {
+int writeToFile(char* fileName, Position head) {
+	FILE* fp = NULL;
+	fp = fopen(fileName, "w");
+
+	if (!fp) {
+		printf("Error while opening the file!");
+		return EXIT_FAILURE;
+	}
+	
+
 
 	return EXIT_SUCCESS;
 }
 
-int IspisDatoteka(char* imeDat) {
+int readFromFile(char* fileName) {
+	FILE* fp = NULL;
+	fp = fopen(fileName, "r");
+	Person* newPerson = NULL;
+
+	if (!fp) {
+		printf("Error while opening the file!");
+		return EXIT_FAILURE;
+	}
+
+	while (!feof(fp)) {
+		scnaf("%s %s %d", newPerson);
+	}
+
+	fclose(fp);
 
 	return EXIT_SUCCESS;
 }
 
-int BrisiSve(Pozicija P) {
-	Pozicija temp;
+int deleteList(Position head) {
+	Position temp;
 
-	while (P->next != NULL) {
-		temp = P->next;
-		P->next = temp->next;
+	while (head->next != NULL) {
+		temp = head->next;
+		head->next = temp->next;
 		free(temp);
 	}
+	return EXIT_SUCCESS;
+}
+
+int menu(Person head) {
+	int choice = 0;
+
+	do {
+		printf("\n");
+		printf("By entering a number, you select the action you want to do:\n 1) dynamically add a new element to the beginning of the list\n 2) print the list\n 3) dynamically add a new element to the end of the list\n 4) find the element in the list (by last name)\n 5) delete a certain element from the list\n");
+		printf(" 6) dynamically add a new element after the specified element\n 7) dynamically add a new element in front of the specified element\n 8) sort the list by surnames of persons\n 9) write the list to the file\n 10) read the list from the file\n Enter 0 to exit from the menu\n");
+
+		scanf("%d", &choice);
+
+		switch (choice) {
+		case 0:
+			printf("You exited successfully from the menu!\n");
+			break;
+		case 1:
+			addToFront(&head);
+			break;
+		case 2:
+			printList(head.next);
+			break;
+		case 3:
+			addToEnd(&head);
+			break;
+		case 4:
+			searchBySurname(&head);
+			break;
+		case 5:
+			deletePerson(&head);
+			break;
+		case 6:
+			insertAfterPerson(&head);
+			break;
+		case 7:
+			insertBeforePerson(&head);
+			break;
+		case 8:
+			sortList(&head);
+			break;
+		/*case 9:
+				writeToFile();
+				break;
+		case 10:
+				readFromFile();
+				break;*/
+		default:
+			printf("Number is not on menu! Please, try again!:\n");
+		}
+	}
+
+	while (choice != 0);
+
+	deleteList(&head); //Na kraju brisemo cijelu listu da ne zauzima memoriju!
+
 	return EXIT_SUCCESS;
 }

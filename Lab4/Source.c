@@ -1,111 +1,220 @@
-/*
-4. Napisati program za zbrajanje i mnozenje polinoma. Koeficijenti i eksponenti se
-èitaju iz datoteke.
-Napomena: Eksponenti u datoteci nisu nuzno sortirani.
-*/
-
 #define _CRT_SECURE_NO_WARNINGS
-#define EXIT_FAILURE (-1)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+struct _clan;
+typedef struct _clan* Position;
 
-typedef struct _polynome* Position;
+typedef struct _clan {
+    int c;
+    int e;
 
-typedef struct _polynome {
-	int constant;
-	int exponent;
-	Position next;
-}Polynome;
+    Position next;
+} Clan;
+
+int readFromFile(Position, Position);
+int sortInput(Position, Position);
+int printPolinom(Position);
+int sumOfPolinoms(Position, Position, Position);
+int productOfPolinoms(Position, Position, Position);
+int freeMemory(Position, Position);
+Position createPolinom(int, int);
+
+int insertAfter(Position, Position);
+
+int main(void) {
+    Clan head = { .c = 0, .e = 0, .next = NULL };
+    Clan head1 = { .c = 0, .e = 0, .next = NULL };
+    Clan head2 = { .c = 0, .e = 0, .next = NULL };
+    Position P = NULL, Q = NULL, tempp = NULL;
+    Clan Sum = { .c = 0, .e = 0, .next = NULL };
+    Clan Product = { .c = 0, .e = 0, .next = NULL };
+    int e = 0, c = 0;
+    printf("Polinomi:\n");
+    readFromFile(&head1, &head2);
+    printf("\n");
+
+    sumOfPolinoms(&head1, &head2, &Sum);
+    printf("Suma: ");
+    printPolinom(&Sum);
+    printf("\n");
 
 
-//int readFile(Position, Position, char*);
-//int mergeAfter(Positon, Position) current, newElement
-//int insertAfter(Position, Position);
-//int deleteAfter(Position);;
-//int parseStringIntoList(Position, char* ?) head, buffer
-//freeMemory();
-//addPoly();
-//multiplyPoly();
+    productOfPolinoms(&head1, &head2, &Product);
+    printf("\n");
+    printf("Produkt: ");
+    printPolinom(&Product);
 
-Position createPolynome();
-int insertSorted(Position, Position);
-int printPolynome(Position);
+    freeMemory(&head1, tempp);
+    freeMemory(&head2, tempp);
+    freeMemory(&Sum, tempp);
+    freeMemory(&Product, tempp);
 
-int main() {
-	Polynome Head1 = { .constant = 0, .exponent = 0, .next = NULL }; //treba readFromFile() i ostale funkcijes
-    Polynome Head2 = { .constant = 0, .exponent = 0, .next = NULL };
-
- 
-
-	return EXIT_SUCCESS;
-
+    return 0;
 }
 
-Position createPolynome() {
-    Position newPoly = NULL;
-    int _constant = 0;
-    int _exponent = 0;
+Position createPolinom(int c, int e) {
+    Position x = NULL;
+    x = (Position)malloc(sizeof(struct _clan));
 
-    newPoly = (Position)malloc(sizeof(Polynome));
-
-    if (!newPoly) {
-        printf("Error allocation!\n");
-        return EXIT_FAILURE;
-    }
-
-    printf("Enter a constant:\n");
-    scanf("%d", _constant);
-
-    printf("Enter an exponent:\n");
-    scanf("%d", _exponent);
-
-    newPoly->constant = _constant;
-    newPoly->exponent = _exponent;
-    newPoly->next = NULL;
-
-    return newPoly;
+    x->c = c;
+    x->e = e;
+    x->next = NULL;
+    return x;
 }
 
-int insertSorted(Position head1, Position head2) {
+int readFromFile(Position head1, Position head2) {
+    int n = 0, br = 1, e = 0, c = 0;
+    char buffer[256] = { 0 };
+    char* p = buffer;
+    FILE* fp = NULL;
+    fp = fopen("polinomi.txt", "r");
+
+    Position x = NULL;
     Position temp = NULL;
-    temp = (Position)malloc(sizeof(Polynome));
 
-    if (!temp) {
-        printf("Error allocation!\n");
-        return EXIT_FAILURE;
+    while (!feof(fp)) {
+        fgets(p, 256, fp);
+
+        while (strlen(p) > 0) {
+
+            sscanf(p, "%d %d %n", &c, &e, &n);
+            x = createPolinom(c, e);
+            if (br == 1) {
+                if (x->c != 0)
+                    sortInput(head1, x);
+            }
+            else if (br == 2) {
+                if (x->c != 0)
+                    sortInput(head2, x);
+            }
+            p = p + n;
+        }
+        if (br == 1) {
+            printPolinom(head1);
+            printf("\n");
+        }
+        else if (br == 2) {
+            printPolinom(head2);
+            printf("\n");
+        }
+        br++;
     }
 
-    if (head2->constant == 0)
-        return EXIT_SUCCESS;
+    return 0;
+}
 
-    while (head1 != NULL) {
-        if (head1->next == NULL || (head2->exponent) > (head1->next->exponent)) {
-            head2->next = head1->next;
-            head1->next = head2;
-            return EXIT_SUCCESS;
+
+int sortInput(Position head, Position x) {
+    Position q = head;
+    Position temp = NULL;
+
+    if (x->c == 0)
+        return 0;
+
+    while (q != NULL) {
+        if (q->next == NULL || (x->e) > (q->next->e)) {
+            x->next = q->next;
+            q->next = x;
+            return 0;
         }
-        else if (head2->exponent == head1->next->exponent) {
-            head1->next->constant += head2->constant;
-            if (head1->next->constant == 0) {
-                temp = head1->next;
-                head1->next = head1->next->next;
+        else if (x->e == q->next->e) {
+            q->next->c += x->c;
+            if (q->next->c == 0) {
+                temp = q->next;
+                q->next = q->next->next;
                 free(temp);
             }
-            return EXIT_SUCCESS;
+            return 0;
         }
-        head1 = head1->next;
+        q = q->next;
     }
-    return EXIT_SUCCESS;
+    return -1;
 }
 
 
-int printPolynome(Position firstElement) {
-
-    while (firstElement != NULL) {
-        printf("%dx^%d  ", firstElement->constant, firstElement->exponent);
-        firstElement = firstElement->next;
+int printPolinom(Position head) {
+    Position x = head->next;
+    while (x != NULL) {
+        printf("%dx^%d  ", x->c, x->e);
+        x = x->next;
     }
-    return EXIT_SUCCESS;
+    return 0;
+}
+
+int sumOfPolinoms(Position pol1, Position pol2, Position sum) {
+    Position P = NULL;
+    int n = 0;
+
+    while (pol1 != NULL || pol2 != NULL) {
+        if (pol1 == NULL) {
+            while (pol2 != NULL) {
+                P = createPolinom(pol2->c, pol2->e);
+                sortInput(sum, P);
+                pol2 = pol2->next;
+            }
+        }
+        else if (pol2 == NULL) {
+            while (pol1 != NULL) {
+                P = createPolinom(pol1->c, pol1->e);
+                sortInput(sum, P);
+                pol1 = pol1->next;
+            }
+        }
+        else if (pol1->e > pol2->e) {
+            P = createPolinom(pol1->c, pol1->e);
+            sortInput(sum, P);
+            pol1 = pol1->next;
+        }
+        else if (pol1->e < pol2->e) {
+            P = createPolinom(pol2->c, pol2->e);
+            sortInput(sum, P);
+            pol2 = pol2->next;
+        }
+        else if (pol1->e == pol2->e) {
+            n = pol1->c + pol2->c;
+
+            if (n == 0) {
+                pol1 = pol1->next;
+                pol2 = pol2->next;
+                continue;
+            }
+            else {
+                P = createPolinom(n, pol1->e);
+                sortInput(sum, P);
+                pol1 = pol1->next;
+                pol2 = pol2->next;
+            }
+        }
+    }
+    return 0;
+}
+
+int freeMemory(Position head, Position tempp) {
+    while (head->next != NULL) {
+        tempp = head->next;
+        head->next = head->next->next;
+        free(tempp);
+    }
+    return 0;
+}
+
+int productOfPolinoms(Position pol1, Position pol2, Position product) {
+    Position temp1 = pol2;
+    Position newEl = NULL;
+
+    pol1 = pol1->next;
+    pol2 = pol2->next;
+
+    while (pol1 != NULL) {
+        pol2 = temp1;
+        while (pol2 != NULL) {
+            newEl = createPolinom(pol1->c * pol2->c, pol1->e + pol2->e);
+            sortInput(product, newEl);
+            pol2 = pol2->next;
+        }
+        pol1 = pol1->next;
+    }
+    return 0;
 }
