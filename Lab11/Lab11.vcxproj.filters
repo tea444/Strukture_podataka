@@ -19,4 +19,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="hrvatska.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="belgija.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="austrija.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="drzave.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="italija.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

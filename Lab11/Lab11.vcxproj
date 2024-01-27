@@ -141,6 +141,13 @@
   <ItemGroup>
     <ClCompile Include="Source.c" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="austrija.txt" />
+    <Text Include="belgija.txt" />
+    <Text Include="drzave.txt" />
+    <Text Include="hrvatska.txt" />
+    <Text Include="italija.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
